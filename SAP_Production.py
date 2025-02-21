@@ -11,7 +11,7 @@ import subprocess
 import platform
 
 # Allowed serial number
-ALLOWED_SERIAL_NUMBER = "0000_0000_0000_0000_ACE4_2E00_3AF9_5F98."  # Replace with your device's serial number
+ALLOWED_SERIAL_NUMBER = ""  # Replace with your device's serial number
 
 def get_device_serial_number():
     """Retrieve the device's hard drive serial number based on platform."""
