@@ -13,13 +13,30 @@ import platform
 # Allowed serial number
 ALLOWED_SERIAL_NUMBER = ""  # Replace with your device's serial number
 
+import platform
+import subprocess
+
 def get_device_serial_number():
     """Retrieve the device's hard drive serial number based on platform."""
     try:
         system_type = platform.system()
         if system_type == "Windows":
-            result = subprocess.check_output("wmic diskdrive get serialnumber", shell=True)
-            serial_number = result.decode().strip().split("\n")[1].strip()
+            try:
+                import wmi
+                c = wmi.WMI()
+                for disk in c.Win32_DiskDrive():
+                    if 'PHYSICALDRIVE0' in disk.DeviceID:
+                        serial_number = disk.SerialNumber.strip()
+                        return serial_number
+            except ImportError:
+                print("wmi module not found. Attempting to install...")
+                subprocess.check_call(["python", "-m", "pip", "install", "wmi"])
+                import wmi
+                c = wmi.WMI()
+                for disk in c.Win32_DiskDrive():
+                    if 'PHYSICALDRIVE0' in disk.DeviceID:
+                        serial_number = disk.SerialNumber.strip()
+                        return serial_number
         elif system_type == "Linux":
             result = subprocess.check_output("cat /proc/cpuinfo | grep Serial", shell=True)
             serial_number = result.decode().strip().split(": ")[-1]
