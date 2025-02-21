@@ -11,7 +11,7 @@ import subprocess
 import platform
 
 # Allowed serial number
-ALLOWED_SERIAL_NUMBER = ""  # Replace with your device's serial number
+ALLOWED_SERIAL_NUMBER = "0000_0000_0000_0000_ACE4_2E00_3AF9_5F98."  # Replace with your device's serial number
 
 import platform
 import subprocess
@@ -51,6 +51,7 @@ def get_device_serial_number():
     except Exception as e:
         print(f"Error retrieving serial number: {e}")
         return None
+
 
 def authenticate_device(allowed_serial_number):
     """Authenticate the device based on its serial number."""
@@ -230,10 +231,10 @@ class ShipTiltDashboard:
             self.logo1 = None
             self.logo2 = None
 
-        self.console_queue = queue.Queue()
-        self.last_console_update = time.time()
-        self.console_update_interval = 0.5
-        self.start_console_thread()
+        # self.console_queue = queue.Queue()
+        # self.last_console_update = time.time()
+        # self.console_update_interval = 0.5
+        # self.start_console_thread()
 
         # Initialize layout
         self.init_layout()
@@ -342,7 +343,7 @@ class ShipTiltDashboard:
         # Enhanced angle display
         angle_label = ctk.CTkLabel(status_frame, 
                                 text="0°", 
-                                font=("Helvetica", 72, "bold"), 
+                                font=("Helvetica", 60, "bold"), 
                                 text_color="#00FF00",
                                 fg_color="black")
         angle_label.pack()
@@ -370,7 +371,7 @@ class ShipTiltDashboard:
             self.base_font_size = new_font_size
 
             # Update heading font size
-            self.heading.configure(font=("Helvetica", self.base_font_size * 6, "bold"))
+            self.heading.configure(font=("Helvetica", self.base_font_size * 5, "bold"))
 
             # Resize logos
             if self.logo1:
@@ -499,7 +500,7 @@ class ShipTiltDashboard:
                         if roll is not None and pitch is not None:
                             self.tilt_angle_1 = roll
                             self.tilt_angle_2 = pitch
-                            self.console_queue.put((hex_data, roll, pitch, check_status))
+                            # self.console_queue.put((hex_data, roll, pitch, check_status))
                             
             except Exception as e:
                 print(f"Serial read error: {e}")
@@ -549,35 +550,35 @@ class ShipTiltDashboard:
 
     def on_close(self):
         self.running = False
-        self.console_queue.put((None, None, None))  # Signal console thread to exit
+        # self.console_queue.put((None, None, None))  # Signal console thread to exit
         self.serial_port.close()
         self.root.destroy()
 
-    def start_console_thread(self):
-        """Start the console update thread."""
-        self.console_thread = threading.Thread(target=self.console_update_thread, daemon=True)
-        self.console_thread.start()
+    # def start_console_thread(self):
+    #     """Start the console update thread."""
+    #     self.console_thread = threading.Thread(target=self.console_update_thread, daemon=True)
+    #     self.console_thread.start()
 
-    def console_update_thread(self):
-        """Thread to clear and update the console periodically."""
-        while True:
-            try:
-                item = self.console_queue.get()
-                if item[0] is None:  # Exit signal
-                    break
+    # def console_update_thread(self):
+    #     """Thread to clear and update the console periodically."""
+    #     while True:
+    #         try:
+    #             item = self.console_queue.get()
+    #             if item[0] is None:  # Exit signal
+    #                 break
 
-                hex_data, roll, pitch, check_status = item
-                current_time = time.time()
-                if current_time - self.last_console_update >= self.console_update_interval:
-                    os.system('cls' if os.name == 'nt' else 'clear')
-                    print(f"Hex: {hex_data}")
-                    print(f"Status: {check_status}")
-                    print(f"Roll: {roll}")
-                    print(f"Pitch: {pitch}")
-                    self.last_console_update = current_time
-            except Exception as e:
-                print(f"Console update thread error: {e}")
-                break
+    #             hex_data, roll, pitch, check_status = item
+    #             current_time = time.time()
+    #             if current_time - self.last_console_update >= self.console_update_interval:
+    #                 os.system('cls' if os.name == 'nt' else 'clear')
+    #                 print(f"Hex: {hex_data}")
+    #                 print(f"Status: {check_status}")
+    #                 print(f"Roll: {roll}")
+    #                 print(f"Pitch: {pitch}")
+    #                 self.last_console_update = current_time
+    #         except Exception as e:
+    #             print(f"Console update thread error: {e}")
+    #             break
     
 if __name__ == "__main__":
     # Authenticate device before proceeding
